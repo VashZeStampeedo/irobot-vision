@@ -17,15 +17,15 @@ import platform
 import os
 
 # imported platform module to help with cross-compatibility
-if platform.system() == 'Windows':
-	r = create.Create(4)
-elif platform.system() == 'Linux':
-	r = create.Create("/dev/ttyUSB0")
-elif platform.system() == 'Darwin':
-	r = create.Create("/dev/tty.keySerial1")
-else:
-	print("No supported OS found, exiting!")
-	os._exit(1)
+#if platform.system() == 'Windows':
+#	r = create.Create(4)
+#elif platform.system() == 'Linux':
+#	r = create.Create("/dev/ttyUSB0")
+#elif platform.system() == 'Darwin':
+#	r = create.Create("/dev/tty.keySerial1")
+#else:
+#	print("No supported OS found, exiting!")
+#	os._exit(1)
 
 # create video capture
 cap = cv2.VideoCapture(0)
@@ -33,13 +33,15 @@ best_cnt = 0
 moveCnt = 0
 while(1):
 	# poll sensors, and then check if we've hit something
-	sensor = r.sensors([create.LEFT_BUMP, create.RIGHT_BUMP])
+#	sensor = r.sensors([create.LEFT_BUMP, create.RIGHT_BUMP])
 	# if we hit the left, turn left
-	#if sensor[create.LEFT_BUMP] == 1:
-	#	r.turn(30)
+#	if sensor[create.LEFT_BUMP] == 1:
+#		r.turn(30)
+#		moveCnt = 0
 	# if we hit the right, turn right
-	#elif sensor[create.RIGHT_BUMP] == 1:
-	#	r.turn(-30)
+#	elif sensor[create.RIGHT_BUMP] == 1:
+#		r.turn(-30)
+#		moveCnt = 0
 
 	# read the frames
 	_,frame = cap.read()
@@ -49,7 +51,7 @@ while(1):
 
 	# convert to hsv and find range of colors
 	hsv = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
-	thresh = cv2.inRange(hsv,np.array((160, 50, 100), dtype=np.uint8), np.array((179, 255, 255), dtype=np.uint8))
+	thresh = cv2.inRange(hsv,np.array((160, 80, 80), dtype=np.uint8), np.array((170, 255, 255), dtype=np.uint8))
 	thresh2 = thresh.copy()
 
 	# find contours in the threshold image
@@ -65,12 +67,12 @@ while(1):
 
 	# if the max_area of identified color is too small, turn until it's big enough
 	# if it's big enough, move towards it 10 centimeters
-	if max_area < 21:
-		r.turn(30)
+	if max_area < 1:
+#		r.turn(30)
 		print("Turning!")
 		moveCnt = 0
 	else:
-		r.go(100)
+#		r.go(100, 100)
 		print("Moving!")
 		moveCnt = moveCnt + 1
 
@@ -79,12 +81,10 @@ while(1):
 		break
 
 	# if key pressed is 'Esc', exit the loop
-	cv2.imshow('thresh',thresh2)
 	if cv2.waitKey(33)== 27:
 	    break
 	
 # Clean up everything before leaving
 cap.release()
-r.stop()
 # Play a victory song!
-r.playSong([(88, 8),(88, 16),(88,16),(84, 8),(88, 16),(91,32),(79,16)])
+#r.playSong([(88, 8),(88, 16),(88,16),(84, 8),(88, 16),(91,32),(79,16)])
